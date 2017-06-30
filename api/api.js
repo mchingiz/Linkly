@@ -1,5 +1,5 @@
 const apiRoutes = require('express').Router();
-const collection = require('./collection.js');
+const collection = require('./Collection/collection.js');
 
 apiRoutes.use('/collection', collection);
 

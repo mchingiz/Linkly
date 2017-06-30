@@ -4,10 +4,11 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
+const validator = require('express-validator');
 const mysql = require('mysql');
-
 const bodyParser = require('body-parser');
 const routes = require('./routes.js');
+const validation = require('./validation.js');
 
 // ---------------
 // Configurations
@@ -19,16 +20,14 @@ var port = process.env.PORT || 8000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(validator());
 
 // ---------------
 // Functionality
 // ---------------
 
-// app.use('/',routes);
-
+app.use('/',validation);
 app.use('/',routes);
-
-
 
 app.listen(port,function(){
     console.log('listening on port '+port);
