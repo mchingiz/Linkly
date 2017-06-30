@@ -1,18 +1,17 @@
 // ---------------
 // Declarations and dependencies
 // ---------------
-
 require('dotenv').config();
 const express = require('express');
 const app = express();
 const mysql = require('mysql');
+
 const bodyParser = require('body-parser');
 const routes = require('./routes.js');
 
 // ---------------
 // Configurations
 // ---------------
-
 
 var port = process.env.PORT || 8000;
 
