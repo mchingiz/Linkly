@@ -9,6 +9,7 @@ const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const routes = require('./routes.js');
 const validation = require('./validation.js');
+const requestLogger = require('./utils/requestLogger.js');
 
 // ---------------
 // Configurations
@@ -26,11 +27,14 @@ app.use(validator());
 // Functionality
 // ---------------
 
+app.use('/',requestLogger);
 app.use('/',validation);
 app.use('/',routes);
 
 app.listen(port,function(){
     console.log('listening on port '+port);
+    // console.log(this.listenerCount());
 });
+
 
 // console.log(api.collection.get(con,seq));
