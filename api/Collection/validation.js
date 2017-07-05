@@ -4,9 +4,10 @@ const collectionValidations = require('express').Router();
 // ---- TEST ----
 // --------------
 
-// collectionRoutes.get('/test',function(req,res,next){
-//     next();
-// });
+collectionValidations.post('/test',function(req,res,next){
+    console.log('Validating test...');
+    next('route');
+});
 
 // --------------------------
 // ----- NEW COLLECTION -----
@@ -38,7 +39,7 @@ collectionValidations.post('/:id',function(req,res,next){
 // ----- GET COLLECTION -----
 // --------------------------
 
-collectionValidations.get('/:id',function(req,res,next){
+collectionValidations.get('/:id(\\d+)',function(req,res,next){
     console.log('validating get collection...');
 
     req.check('id','Invalid id')

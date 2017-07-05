@@ -1,5 +1,6 @@
 const collectionRoutes = require('express').Router();
-const query = require('../../utils/query.js');
+const query = require('../../db/query.js');
+const transaction = require('../../db/transaction.js');
 
 // ------------------
 // ---- HOMEPAGE ----
@@ -13,26 +14,42 @@ collectionRoutes.get('/',function(req,res){
 // ---- TEST ----
 // --------------
 
-// collectionRoutes.get('/test',function(req,res){
-//     console.log('test');
-//     res.sendStatus(200);
-//     // query('SELECT * FROM collection',[],function(results,fields){
-//     //     console.log(results);
-//     //     res.send(results);
-//     // });
-// });
+collectionRoutes.get('/test',function(req,res){
+    console.log('test');
+
+    var queries = {
+        collection: {
+            string: "INSERT INTO collection (name,user_id) VALUES ?",
+            values: ["bomb",5]
+        },
+        links:{
+            string: "INSERT INTO links (name,url,collection_id) VALUES ?",
+            values: [
+                ["name1","url1",5],
+                ["name2","url2",5]
+            ]
+        }
+    };
+
+    transaction(queries,function(err,results,fields){
+        console.log(results);
+        res.sendStatus(200);
+    });
+});
 
 // --------------------------
 // ----- NEW COLLECTION -----
 // --------------------------
 
 collectionRoutes.post('/',function(req,res){
+    // console.log(req.body);
+
     console.log('[EXPRESS] Create collection / name: '+req.body.name + ' / id: ' + req.body.user_id);
 
-    req.setEncoding('utf8');
+    var queryString = "INSERT INTO collection (name,user_id) VALUES ?";
+    console.log(req.body.links);
 
-    var queryString = "INSERT INTO collection (name,user_id) VALUES (?,?)";
-    var queryData = [req.body.name,req.body.user_id];
+    var queryData = req.body.links;
 
     query(queryString,queryData,function(err,results,fields){
         if(err){
