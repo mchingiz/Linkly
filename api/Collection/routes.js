@@ -86,19 +86,29 @@ collectionRoutes.get('/:id',function(req,res){
 
 collectionRoutes.put('/:id',function(req,res){
     console.log('[EXPRESS] Update collection / name: '+req.body.name + ' / id: ' + req.params.id);
-    //
-    // res.sendStatus(200);
 
-    query(
-        "UPDATE collection SET name=? WHERE id=?",
-        [req.body.name,req.params.id],
-        function(results,fields){
+    const stringQuery = "UPDATE collection SET name=? WHERE id=?";
+    const stringData = [req.body.name,req.params.id];
+
+    query(stringQuery,stringData,function(err,results,fields){
+            console.log(results);
             // console.log('[MYSQL] Affected rows: '+results.affectedRows);
-
-            res.json({
-                statusCode: 200,
-                message: "Collection has been updated successfully"
-            });
+            if(err){
+                console.log(err);
+                res.status(500).json({
+                    errors: ["Couldn't get collection. Internal server error."]
+                })
+            }
+            else if(results.affectedRows == 0){
+                res.status(404).json({
+                    errors: ["Collection is not found."],
+                })
+            }
+            else{
+                res.status(200).json({
+                    message: "Collection has been updated successfully",
+                });
+            }
         });
 });
 
@@ -108,7 +118,31 @@ collectionRoutes.put('/:id',function(req,res){
 // -----------------------------
 
 collectionRoutes.delete('/:id',function(req,res){
-    res.send('delete collection of id '+req.params.id);
+    console.log('[EXPRESS] Delete collection / id: ' + req.params.id);
+
+    const stringQuery = "DELETE FROM collection WHERE id=?";
+    const stringData = [req.params.id];
+
+    query(stringQuery,stringData,function(err,results,fields){
+            console.log(results);
+            // console.log('[MYSQL] Affected rows: '+results.affectedRows);
+            if(err){
+                console.log(err);
+                res.status(500).json({
+                    errors: ["Couldn't get collection. Internal server error."]
+                })
+            }
+            else if(results.affectedRows == 0){
+                res.status(404).json({
+                    errors: ["Collection is not found."],
+                })
+            }
+            else{
+                res.status(200).json({
+                    message: "Collection has been deleted successfully",
+                });
+            }
+        });
 });
 
 module.exports = collectionRoutes;
