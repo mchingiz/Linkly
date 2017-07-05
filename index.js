@@ -7,8 +7,8 @@ const app = express();
 const validator = require('express-validator');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
-const routes = require('./routes.js');
-const validation = require('./validation.js');
+const routes = require('./lib/routes.js');
+const validation = require('./lib/validation.js');
 const requestLogger = require('./utils/requestLogger.js');
 
 // ---------------

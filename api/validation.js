@@ -1,6 +1,6 @@
-const apiRoutes = require('express').Router();
+const apiValidations = require('express').Router();
 const collectionValidation = require('./Collection/validation.js');
 
-apiRoutes.use('/collection', collectionValidation);
+apiValidations.use('/collection', collectionValidation);
 
-module.exports = apiRoutes;
+module.exports = apiValidations;

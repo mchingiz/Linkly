@@ -1,4 +1,4 @@
-const collectionRoutes = require('express').Router();
+const collectionValidations = require('express').Router();
 
 // --------------
 // ---- TEST ----
@@ -12,17 +12,35 @@ const collectionRoutes = require('express').Router();
 // ----- NEW COLLECTION -----
 // --------------------------
 
-collectionRoutes.post('/',function(req,res){
-    res.send('create new collection');
+collectionValidations.post('/:id',function(req,res,next){
+    console.log('validating post collection...');
+
+    req.check('name','Invalid name')
+        .isLength({
+            min: 3,
+            max: undefined
+        }).withMessage('Name should be at least 3 characters long');
+
+    var errors = req.validationErrors();
+
+    if(errors){
+        console.log('Invalid parameter');
+
+        res.status(400).json({
+            errors: errors
+        });
+    }else{
+        next();
+    }
 });
 
 // --------------------------
 // ----- GET COLLECTION -----
 // --------------------------
 
-collectionRoutes.get('/:id',function(req,res,next){
+collectionValidations.get('/:id',function(req,res,next){
+    console.log('validating get collection...');
 
-    console.log('validating get collection');
     req.check('id','Invalid id')
         .isInt({
             allow_leading_zeroes: false
@@ -33,9 +51,8 @@ collectionRoutes.get('/:id',function(req,res,next){
     if(errors){
         console.log('Invalid parameter');
 
-        res.json({
-            statusCode: 400,
-            errors: errors
+        res.status(400).json({
+            errors: errors,
         });
     }else{
         next();
@@ -46,7 +63,9 @@ collectionRoutes.get('/:id',function(req,res,next){
 // ----- UPDATE COLLECTION -----
 // -----------------------------
 
-collectionRoutes.put('/:id',function(req,res,next){
+collectionValidations.put('/:id',function(req,res,next){
+    console.log('validating put collection...');
+
     req.check('id','Invalid id')
         .isInt({
             allow_leading_zeros: false
@@ -62,8 +81,7 @@ collectionRoutes.put('/:id',function(req,res,next){
     if(errors){
         console.log('Invalid parameter');
 
-        res.json({
-            statusCode: 400,
+        res.status(400).json({
             errors: errors
         });
     }else{
@@ -76,8 +94,25 @@ collectionRoutes.put('/:id',function(req,res,next){
 // ----- DELETE COLLECTION -----
 // -----------------------------
 
-collectionRoutes.delete('/:id',function(req,res){
-    res.send('delete collection of id '+req.params.id);
+collectionValidations.delete('/:id',function(req,res,next){
+    console.log('validating delete collection...');
+
+    req.check('id','Invalid id')
+        .isInt({
+            allow_leading_zeros: false
+        }).withMessage('Id should be an integer withour leading zeros');
+
+    var errors = req.validationErrors();
+
+    if(errors){
+        console.log('Invalid parameter');
+
+        res.status(400).json({
+            errors: errors
+        });
+    }else{
+        next();
+    }
 });
 
-module.exports = collectionRoutes;
+module.exports = collectionValidations;

@@ -27,21 +27,26 @@ collectionRoutes.get('/',function(req,res){
 // --------------------------
 
 collectionRoutes.post('/',function(req,res){
-    console.log('[EXPRESS] Create collection / name: '+req.params.name + ' / id: ' + req.params.id);
+    console.log('[EXPRESS] Create collection / name: '+req.body.name + ' / id: ' + req.body.user_id);
 
     req.setEncoding('utf8');
 
-    query(
-        "INSERT INTO collection (name,user_id) VALUES ('?','?')",
-        [req.body.name,req.params.user_id],
-        function(results,fields){
+    var queryString = "INSERT INTO collection (name,user_id) VALUES (?,?)";
+    var queryData = [req.body.name,req.body.user_id];
+
+    query(queryString,queryData,function(err,results,fields){
+        if(err){
+            res.status(500).json({
+                errors: ["Collection couldn't be created. Internal server error."],
+            })
+        }else{
             console.log('[MYSQL] Affected rows: '+results.affectedRows);
 
-            res.json({
-                statusCode: 200,
-                message: "Collection has been created successfully"
+            res.status(201).json({
+                message: "Collection has been created successfully",
             });
-        });
+        }
+    });
 });
 
 // --------------------------
@@ -49,13 +54,29 @@ collectionRoutes.post('/',function(req,res){
 // --------------------------
 
 collectionRoutes.get('/:id',function(req,res){
-    console.log('get by id');
-    res.sendStatus(200);
+    console.log('[EXPRESS] Get collection / id: ' + req.params.id);
 
-    // query('SELECT * FROM collection WHERE id=?',[req.params.id],function(results,fields){
-    //     console.log(results);
-    //     res.send(results);
-    // });
+    const queryString = "SELECT * FROM collection WHERE id=?";
+    const queryData = [req.params.id];
+
+    query(queryString,queryData,function(err,results,fields){
+
+        console.log(results);
+        if(err){
+            console.log(err);
+            res.status(500).json({
+                errors: ["Couldn't get collection. Internal server error."]
+            })
+        }
+        else if(results.length == 0){
+            res.status(404).json({
+                errors: ["Collection is not found."],
+            })
+        }
+        else{
+            res.status(200).json(results);
+        }
+    });
 
 });
 
@@ -64,7 +85,7 @@ collectionRoutes.get('/:id',function(req,res){
 // -----------------------------
 
 collectionRoutes.put('/:id',function(req,res){
-    console.log('[EXPRESS] Update collection / name: '+req.params.name + ' / id: ' + req.params.id);
+    console.log('[EXPRESS] Update collection / name: '+req.body.name + ' / id: ' + req.params.id);
     //
     // res.sendStatus(200);
 
@@ -72,7 +93,7 @@ collectionRoutes.put('/:id',function(req,res){
         "UPDATE collection SET name=? WHERE id=?",
         [req.body.name,req.params.id],
         function(results,fields){
-            console.log('[MYSQL] Affected rows: '+results.affectedRows);
+            // console.log('[MYSQL] Affected rows: '+results.affectedRows);
 
             res.json({
                 statusCode: 200,

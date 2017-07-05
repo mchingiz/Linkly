@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 
-const query = function query(sql,values,next){
+const query = function query(sql,values,callback){
     var connection = mysql.createConnection({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
@@ -17,11 +17,10 @@ const query = function query(sql,values,next){
 
     connection.query(sql,values,function(err,results,fields){
         if(err){
-            console.log('[MYSQL] Couldn\'t connect query the db');
-            throw err;
+            console.log('[MYSQL] Couldn\'t query the db');
         }
 
-        next(results,fields);
+        callback(err,results,fields);
 
         connection.end();
     });
