@@ -63,4 +63,8 @@ typings/
 
 # Personal
 notes.txt
+db/databaseStructure.example.json
+
+# Database
+data/
 

@@ -10,6 +10,7 @@ const bodyParser = require('body-parser');
 const routes = require('./lib/routes.js');
 const validation = require('./lib/validation.js');
 const requestLogger = require('./utils/requestLogger.js');
+const dbMiddleware = require('./db/config.js');
 
 // ---------------
 // Configurations
@@ -29,6 +30,7 @@ app.use(validator());
 
 app.use('/',requestLogger);
 app.use('/',validation);
+app.use('/',dbMiddleware);
 app.use('/',routes);
 
 app.listen(port,function(){

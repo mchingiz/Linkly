@@ -1,13 +1,20 @@
 const collectionRoutes = require('express').Router();
-const query = require('../../db/query.js');
-const transaction = require('../../db/transaction.js');
+const Collection = require('../../db/Models/collection.js');
+
 
 // ------------------
 // ---- HOMEPAGE ----
 // ------------------
 
 collectionRoutes.get('/',function(req,res){
-    res.send('collection homepage');
+    const db = req.db;
+
+    Collection.find({},{},function(err,collections){
+        if(err) throw err;
+
+        console.log(collections);
+        res.status(200).json(collections);
+    })
 });
 
 // --------------
@@ -15,24 +22,25 @@ collectionRoutes.get('/',function(req,res){
 // --------------
 
 collectionRoutes.get('/test',function(req,res){
-    console.log('test');
+    const db = req.db;
 
-    var queries = {
-        collection: {
-            string: "INSERT INTO collection (name,user_id) VALUES ?",
-            values: ["bomb",5]
-        },
-        links:{
-            string: "INSERT INTO links (name,url,collection_id) VALUES ?",
-            values: [
-                ["name1","url1",5],
-                ["name2","url2",5]
-            ]
-        }
-    };
+    var obj = new Collection({
+        name: 'a collection',
+        user_id: 4,
+        links: [
+            {
+                name: "firstLink",
+                url: "firstURL"
+            },{
+                name: "secondLink",
+                url: "secondURL"
+            }
+        ]
+    });
 
-    transaction(queries,function(err,results,fields){
-        console.log(results);
+    obj.save(function(err){
+        if(err) throw err;
+
         res.sendStatus(200);
     });
 });
@@ -42,28 +50,7 @@ collectionRoutes.get('/test',function(req,res){
 // --------------------------
 
 collectionRoutes.post('/',function(req,res){
-    // console.log(req.body);
-
-    console.log('[EXPRESS] Create collection / name: '+req.body.name + ' / id: ' + req.body.user_id);
-
-    var queryString = "INSERT INTO collection (name,user_id) VALUES ?";
-    console.log(req.body.links);
-
-    var queryData = req.body.links;
-
-    query(queryString,queryData,function(err,results,fields){
-        if(err){
-            res.status(500).json({
-                errors: ["Collection couldn't be created. Internal server error."],
-            })
-        }else{
-            console.log('[MYSQL] Affected rows: '+results.affectedRows);
-
-            res.status(201).json({
-                message: "Collection has been created successfully",
-            });
-        }
-    });
+    res.sendStatus(200);
 });
 
 // --------------------------
@@ -71,30 +58,7 @@ collectionRoutes.post('/',function(req,res){
 // --------------------------
 
 collectionRoutes.get('/:id',function(req,res){
-    console.log('[EXPRESS] Get collection / id: ' + req.params.id);
-
-    const queryString = "SELECT * FROM collection WHERE id=?";
-    const queryData = [req.params.id];
-
-    query(queryString,queryData,function(err,results,fields){
-
-        console.log(results);
-        if(err){
-            console.log(err);
-            res.status(500).json({
-                errors: ["Couldn't get collection. Internal server error."]
-            })
-        }
-        else if(results.length == 0){
-            res.status(404).json({
-                errors: ["Collection is not found."],
-            })
-        }
-        else{
-            res.status(200).json(results);
-        }
-    });
-
+    res.sendStatus(200);
 });
 
 // -----------------------------
@@ -102,31 +66,7 @@ collectionRoutes.get('/:id',function(req,res){
 // -----------------------------
 
 collectionRoutes.put('/:id',function(req,res){
-    console.log('[EXPRESS] Update collection / name: '+req.body.name + ' / id: ' + req.params.id);
-
-    const stringQuery = "UPDATE collection SET name=? WHERE id=?";
-    const stringData = [req.body.name,req.params.id];
-
-    query(stringQuery,stringData,function(err,results,fields){
-            console.log(results);
-            // console.log('[MYSQL] Affected rows: '+results.affectedRows);
-            if(err){
-                console.log(err);
-                res.status(500).json({
-                    errors: ["Couldn't get collection. Internal server error."]
-                })
-            }
-            else if(results.affectedRows == 0){
-                res.status(404).json({
-                    errors: ["Collection is not found."],
-                })
-            }
-            else{
-                res.status(200).json({
-                    message: "Collection has been updated successfully",
-                });
-            }
-        });
+    res.sendStatus(200);
 });
 
 
@@ -135,31 +75,7 @@ collectionRoutes.put('/:id',function(req,res){
 // -----------------------------
 
 collectionRoutes.delete('/:id',function(req,res){
-    console.log('[EXPRESS] Delete collection / id: ' + req.params.id);
-
-    const stringQuery = "DELETE FROM collection WHERE id=?";
-    const stringData = [req.params.id];
-
-    query(stringQuery,stringData,function(err,results,fields){
-            console.log(results);
-            // console.log('[MYSQL] Affected rows: '+results.affectedRows);
-            if(err){
-                console.log(err);
-                res.status(500).json({
-                    errors: ["Couldn't get collection. Internal server error."]
-                })
-            }
-            else if(results.affectedRows == 0){
-                res.status(404).json({
-                    errors: ["Collection is not found."],
-                })
-            }
-            else{
-                res.status(200).json({
-                    message: "Collection has been deleted successfully",
-                });
-            }
-        });
+    res.sendStatus(200);
 });
 
 module.exports = collectionRoutes;
